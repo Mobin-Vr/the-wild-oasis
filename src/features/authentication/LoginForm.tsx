@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import Input from "../../ui/Input";
@@ -8,7 +8,9 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit() {}
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+  }
 
   return (
     <Form onSubmit={handleSubmit}>

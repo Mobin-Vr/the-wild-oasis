@@ -1,6 +1,7 @@
 // Search for: 'jo', 'fa', 'mar', 'emm', 'ah'
+import type { Guest } from "../types";
 
-export const guests = [
+export const guests: Guest[] = [
   {
     // id: 1000,
     fullName: 'Jonas Schmedtmann',
