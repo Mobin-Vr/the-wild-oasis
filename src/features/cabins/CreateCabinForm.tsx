@@ -5,12 +5,12 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { createCabin } from '../../services/apiCabins';
 import Button from '../../ui/Button';
+import FileInput from '../../ui/FileInput';
 import Form from '../../ui/Form';
 import FormRow from '../../ui/FormRow';
 import Input from '../../ui/Input';
 import Textarea from '../../ui/Textarea';
 import type { CabinFormData } from './types';
-import FileInput from '../../ui/FileInput';
 
 const ButtonsContainer = styled.div`
    padding: 1.2rem 0;
@@ -115,7 +115,7 @@ function CreateCabinForm() {
             <FileInput
                id='image'
                accept='image/*'
-               {...register('description', {
+               {...register('image', {
                   required: 'This field is required',
                })}
             />

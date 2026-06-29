@@ -55,6 +55,7 @@ export default function CabinRow({ cabin }: CabinRowProps) {
    } = cabin;
 
    const queryClient = useQueryClient();
+   
 
    const { isPending: isDeleteing, mutate } = useMutation({
       mutationFn: deleteCabin,
@@ -74,9 +75,15 @@ export default function CabinRow({ cabin }: CabinRowProps) {
          <div>Fits up to {maxCapacity}</div>
          <Price>{formatCurrency(regularPrice)}</Price>
          <Discount>{formatCurrency(discount)}</Discount>
-         <button onClick={() => mutate(cabinId)} disabled={isDeleteing}>
-            Delete
-         </button>
+         <div>
+            <button onClick={() => mutate(cabinId)} disabled={isDeleteing}>
+               Edit
+            </button>
+
+            <button onClick={() => mutate(cabinId)} disabled={isDeleteing}>
+               Delete
+            </button>
+         </div>
       </TableRow>
    );
 }
