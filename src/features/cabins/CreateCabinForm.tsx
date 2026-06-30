@@ -9,7 +9,7 @@ import Input from '../../ui/Input';
 import Textarea from '../../ui/Textarea';
 import type { CabinFormData, CreateCabinFormProps } from './types';
 import useCreateCabin from './useCreateCabin';
-import useEditCabin from './useEditCabin';
+import useEditCabin from './useEditcabin';
 
 const ButtonsContainer = styled.div`
    padding: 1.2rem 0;
@@ -18,7 +18,7 @@ const ButtonsContainer = styled.div`
    gap: 1.2rem;
 `;
 
-function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
+function CreateCabinForm({ cabinToEdit, onCloseModal }: CreateCabinFormProps) {
    const { id: editId, ...editValues } = cabinToEdit ?? {};
 
    const { isCreating, createCabin } = useCreateCabin();
@@ -39,21 +39,35 @@ function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
       const image: File | string =
          data.image instanceof FileList ? data.image[0] : data.image;
 
-      if (isEditSession)
+      if (isEditSession) {
+         if (!editId) return;
          editCabin(
             { newCabinData: { ...data, image }, id: editId },
             {
                onSuccess: () => {
                   reset();
-                  onShowForm?.((show) => !show);
+                  onCloseModal?.();
                },
             },
          );
-      else createCabin({ ...data, image }, { onSuccess: () => reset() });
+      } else {
+         createCabin(
+            { ...data, image },
+            {
+               onSuccess: () => {
+                  reset();
+                  onCloseModal?.();
+               },
+            },
+         );
+      }
    }
 
    return (
-      <Form onSubmit={handleSubmit(onsubmit)}>
+      <Form
+         onSubmit={handleSubmit(onsubmit)}
+         type={onCloseModal ? 'modal' : 'regular'}
+      >
          <FormRow label='Cabin name' error={errors?.name?.message}>
             <Input
                type='text'
@@ -131,7 +145,11 @@ function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
          </FormRow>
 
          <ButtonsContainer>
-            <Button variation='secondary' type='reset'>
+            <Button
+               variation='secondary'
+               type='reset'
+               onClick={() => onCloseModal?.()}
+            >
                Cancel
             </Button>
             <Button disabled={isWorking}>

@@ -17,4 +17,5 @@ export type CabinApiData = Omit<Cabin, 'id' | 'image'> & {
 export interface CreateCabinFormProps {
    cabinToEdit?: Cabin;
    onShowForm?: (updater: (show: boolean) => boolean) => void;
+   onCloseModal?: () => void;
 }
