@@ -1,20 +1,15 @@
 import styled from 'styled-components';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { createEditCabin } from '../../services/apiCabins';
 import Button from '../../ui/Button';
 import FileInput from '../../ui/FileInput';
 import Form from '../../ui/Form';
 import FormRow from '../../ui/FormRow';
 import Input from '../../ui/Input';
 import Textarea from '../../ui/Textarea';
-import type {
-   CabinApiData,
-   CabinFormData,
-   CreateCabinFormProps,
-} from './types';
+import type { CabinFormData, CreateCabinFormProps } from './types';
+import useCreateCabin from './useCreateCabin';
+import useEditcabin from './useEditcabin';
 
 const ButtonsContainer = styled.div`
    padding: 1.2rem 0;
@@ -25,6 +20,11 @@ const ButtonsContainer = styled.div`
 
 function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
    const { id: editId, ...editValues } = cabinToEdit ?? {};
+
+   const { isCreating, createCabin } = useCreateCabin();
+   const { isEditing, editCabin } = useEditcabin();
+   const isWorking = isCreating || isEditing;
+
    const isEditSession = Boolean(editId);
 
    const { register, handleSubmit, reset, getValues, formState } =
@@ -33,36 +33,6 @@ function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
       });
 
    const { errors } = formState;
-   const queryClient = useQueryClient();
-
-   const { isPending: isCreating, mutate: createCabin } = useMutation({
-      mutationFn: (newCabinData: CabinApiData) => createEditCabin(newCabinData),
-      onSuccess: () => {
-         toast.success('New cabin successfully created');
-         queryClient.invalidateQueries({ queryKey: ['cabins'] });
-         reset();
-      },
-      onError: (err) => toast.error(err.message),
-   });
-
-   const { isPending: isEditing, mutate: editCabin } = useMutation({
-      mutationFn: ({
-         newCabinData,
-         id,
-      }: {
-         newCabinData: CabinApiData;
-         id: number;
-      }) => createEditCabin(newCabinData, id),
-      onSuccess: () => {
-         toast.success('Cabin successfully edited');
-         queryClient.invalidateQueries({ queryKey: ['cabins'] });
-         reset();
-         onShowForm?.((show) => !show);
-      },
-      onError: (err) => toast.error(err.message),
-   });
-
-   const isWorking = isCreating || isEditing;
 
    function onsubmit(data: CabinFormData) {
       // Extract File from FileList (react-hook-form always returns FileList for file inputs)
@@ -70,8 +40,16 @@ function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
          data.image instanceof FileList ? data.image[0] : data.image;
 
       if (isEditSession)
-         editCabin({ newCabinData: { ...data, image }, id: editId });
-      else createCabin({ ...data, image });
+         editCabin(
+            { newCabinData: { ...data, image }, id: editId },
+            {
+               onSuccess: () => {
+                  reset();
+                  onShowForm?.((show) => !show);
+               },
+            },
+         );
+      else createCabin({ ...data, image }, { onSuccess: () => reset() });
    }
 
    return (
@@ -135,7 +113,6 @@ function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
          <FormRow label='Description' error={errors?.description?.message}>
             <Textarea
                id='description'
-               disabled={isWorking}
                defaultValue=''
                {...register('description', {
                   required: 'This field is required',
