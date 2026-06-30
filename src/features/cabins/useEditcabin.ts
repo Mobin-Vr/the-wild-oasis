@@ -8,7 +8,7 @@ type EditCabinVariables = {
    id: number;
 };
 
-export default function useEditcabin() {
+export default function useEditCabin() {
    const queryClient = useQueryClient();
 
    const { isPending, mutate } = useMutation<

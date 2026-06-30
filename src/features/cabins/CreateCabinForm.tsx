@@ -9,7 +9,7 @@ import Input from '../../ui/Input';
 import Textarea from '../../ui/Textarea';
 import type { CabinFormData, CreateCabinFormProps } from './types';
 import useCreateCabin from './useCreateCabin';
-import useEditcabin from './useEditcabin';
+import useEditCabin from './useEditCabin';
 
 const ButtonsContainer = styled.div`
    padding: 1.2rem 0;
@@ -22,7 +22,7 @@ function CreateCabinForm({ cabinToEdit, onShowForm }: CreateCabinFormProps) {
    const { id: editId, ...editValues } = cabinToEdit ?? {};
 
    const { isCreating, createCabin } = useCreateCabin();
-   const { isEditing, editCabin } = useEditcabin();
+   const { isEditing, editCabin } = useEditCabin();
    const isWorking = isCreating || isEditing;
 
    const isEditSession = Boolean(editId);
