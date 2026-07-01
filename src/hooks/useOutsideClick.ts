@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-export default function useOutsideClick(handler: () => void) {
-   const ref = useRef<HTMLDivElement>(null);
+export default function useOutsideClick<T extends HTMLElement>(
+   handler: () => void,
+) {
+   const ref = useRef<T>(null);
 
    useEffect(
       function () {

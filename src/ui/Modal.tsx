@@ -111,7 +111,7 @@ function Open({ children, opens: opensWindowName }: OpenProps) {
 // Renders only when name === openName; mounts into document.body via portal
 function Window({ children, name }: WindowProps) {
    const { openName, close } = useContext(ModalContext);
-   const ref = useOutsideClick(close);
+   const ref = useOutsideClick<HTMLDivElement>(close);
 
    if (name !== openName) return null;
 
